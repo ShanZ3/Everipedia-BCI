@@ -1,0 +1,109 @@
+<html><head></head><body bgcolor="#f9fbfc" alink="000099" vlink="061970" link="000099">
+
+<title> Psych 195B (Winter 2020)</title>
+
+
+<h2 align="center"> Everipedia Brain Computer Interface Project (Winter 2020)</h2>
+
+
+<b>Supervisor:</b> Sam Kazemian <br>
+<b>Instructor:</b> Matthew Rosenberg <br>
+<b>Hourly Commitment:</b> 10 hours per week
+
+<h3 align="center">EEG BCI Project Description</h3> 
+<h4>Holistic View</h4>
+<ul>We aim to develop and refine a non-invasive brain-computer interface (BCI) to allow audience members to manipulate dynamic art displays based on intention alone. Existing EEG-based BCI interfaces suffer from low decoding accuracy and poor inter-subject repeatability. This may be due in part to the short development windows in which these systems are created. Academic researchers and startup employees generally must make a scientific advance or bring a product to market in less than a year. Once an academic paper is published or a product is released, there is little incentive to continue to improve these systems. This has resulted in a plethora of mediocre solutions and few, if any, systems that are robust enough to be deployed as a reliable and general BCI tool. Here we propose a different slower, yet more thorough, development strategy with the following requirements in mind:   
+<ul>
+<li>Decode participant intentions with at least 85% accuracy</li>
+<li>Provide a repeatable solution that works for 85% of participants</li><li>Implement closed-loop EEG control of stimuli in as close to real-time as possible (i.e. with a maximum delay of 10 seconds between intention onset and stimulus modification)</li>
+</ul>
+    
+Data source of this project can be found <a href="https://physionet.org/content/eegmmidb/1.0.0/" rel="nofollow">here</a>
+</ul>
+    
+<h4>Notes and Data and Task</h4>
+<ul>
+EEG as a neural recording technique is extremely crude. Much of the failure to get BCI to work in academia and industry up to now is due to people trying to decode too much from a method with poor spatial resolution. For now, we do not care about trying to model what part of the brain contributed to our signal (i.e. ignore CSP, source localization, etc). That said, EEG is a cheap, mature, and safe (non-invasive) recording technique with over 100 years of history. We want to exploit the most robust EEG phenomena to build a working decoder. There are two candidate EEG phenomena we can exploit separately or, potentially, in tandem:<br> <br>
+    
+<ul><li>
+<b>Hemispheric lateralization of motor commands:</b><br>
+The left half of the brain controls the right half of the body (and vice versa). We can either group all body parts on a given side together OR choose the body part that gives us the best accuracy. We do not need to be able to decode motor imagery of hands vs feet etc (as per the mne tutorial). This is likely to be very difficult or impossible, and almost assuredly a waste of our time. </li> <br>
+<li>
+<b>Steady-state visual evoked potentials (SSVEP):</b><br>
+To put it crudely, if the participant looks at a flashing object on a computer screen, the visual/ occipital cortex in the back of the head will also oscillate at that same frequency. The attached spelling implementation paper successfully exploits this phenomena. Again, the authors aimed too high: they try to decode 30 classes! We should start with two (flashing objects at different frequencies and thus two brain states). There are online datasets for this as well, including in the second github repo link. 
+</li></ul></ul>
+
+<h3 align="center">General plan</h3>
+<h4> Initial Objectives </h4>
+<ul>
+Decode binary intentions from EEG data with > 85% accuracy in > 85% of subjects. <br><br>
+<ul><li>
+EEG signal preprocessing / feature generation (filtering/denoising and dimensionality reduction)     
+</li>
+<li>Decoding participant's intention from EEG (machine learning)</li>
+</ul><br>
+Get the best decoding performance we can on either of the tasks separately and then combine them. We intend to combine binary classification in both tasks to give us 4 way classification. The brain regions are somewhat distinct, so it's likely that we can decode from them without interference by restricting which EEG channels we use for each type of decoding. 
+</ul>
+    
+<h3 align="center">Schedule</h3> 
+<h4>Week 1-3:</h4>
+<ul>
+Begin with publicly available datasets to diminish the chance that poor decoding is merely a function of poor input data quality. <br><br>
+<ul>
+<li><a href="https://mne.tools/dev/auto_examples/decoding/plot_decoding_csp_eeg.html#sphx-glr-auto-examples-decoding-plot-decoding-csp-eeg-py">Data from the MNE tutorial</a></li>
+</ul>
+<br>
+<b>Task 1:</b> The mne motor imagery tutorial uses linear discriminant analysis (LDA). Replace that method with "task related component analysis" (TRCA, paper linked below).<ul> <br>
+<li><a href="https://github.com/ODVV/TRCA">Python code</a></li>
+<li><a href="https://github.com/mnakanishi/TRCA-SSVEP">MATLAB code</a></li>
+</ul> <br>
+<b>Task 2:</b> Explore different model architectures. It appears that all of the best implementations are either convolutional neural nets (CNNs) or long-short term memory (LSTMs). The former are feedforward networks commonly employed in image classification, the latter is a type of recurrent neural net most commonly used in natural language processing.<ul> <br>
+</ul>
+</ul>
+    
+<h4>Week 4-7:</h4>
+<ul><b>Goal 0:</b>figure out how to format data <br><br>
+<ul><li>Sub Goal A: literature search for papers doing CNN with EEG<br><ul><li><a href="https://arxiv.org/pdf/1908.02252.pdf">LSTM Acc: 79%</a> </li><li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6338892/">LSTM Acc: 73%</a> </li><li><a href="https://cs224d.stanford.edu/reports/GreavesAlex.pdf">LSTM Acc: 72%</a> </li><li><a href="https://mediatum.ub.tum.de/doc/1422453/552605125571.pdf">LSTM Acc: 66.2%</a></li></ul></li> <br>
+<li>Sub Goal B: look for available code to see how their data is structured</li>
+<ul><li><a href="https://github.com/tevisgehr/EEG-Classification">EEG Classification</a> </li><li><a href="https://github.com/CVxTz/EEG_classification">EEG Classification with CNN</a> </li><li><a href="https://github.com/vlawhern/arl-eegmodels">EEG Models</a> </li><li><a href="https://github.com/Cerebro409/EEG-Classification-Using-Recurrent-Neural-Network">EEG Classification with RNN</a></li></ul></ul> <br>
+<b>Goal 1:</b> Improve LSTM Performance <br> <br>
+<b>Goal 2:</b> Improve CNN Performance <br> <br>
+<b>Goal 3:</b> Explore alternative model architectures <br><br>
+<b>Goal 4:</b>Try unsupervised clustering on the input data to see whether some consistent property of the data leads to poor performance <br> <br>
+<ul><li>Desired Output: <br> A 2d (3d plot if the 3d plot isn't too hard) plot showing each data instance (i.e. each trial of EEG data) reduced to a single point in this reduced dimension space. Misclassified points (via the separate supervised analysis) are plotted in red dimensionality reduction approaches to try (show plots for each, not just the "best" one)</li><br><li>LDA and PCA</li><br><li>tSNE:<br> This is a non-linear approach that avoids being corrupted by differences between extremely distant points and EVEN more distant points, this method is non-parametric meaning that it needs to be generated on each new batch of data, unlike PCA. </li><br><li> UMAP </li></ul> <br>
+<b>Goal 5:</b> Explore transformations to input data prior to training the classifier (i.e.: PCA, TRCA) <br><br>
+<b>Goal 6:</b> Explore different raw input types <br><br>
+<ul><li> Option 0: current approach: right vs left imagined fist clenching</li><br><li> Option 1: current approach training wheels: right vs left actual fist clenching (this might be a useful as a positive control, allowing us to show that our classifiers can work in principle but they are unable to do so on the more difficult input data type of imagined motor actions).</li><br><li> Option 2: viable similar alternative approach: use the same MNE dataset but select the trials and labels to discriminate feet vs hands (instead of left/right). This is contrary to intuition but results from one paper reported much better performance for this discrimination over left vs right.</li></ul>
+</ul>
+
+<h4>Week 8-9:</h4>
+<ul>
+<b>Raw EEG Data EDA </b><br><br>
+<ul> <li>Double check that every model is seeing the same input and labels</li> <li>Make it easy to verify</li> <li>Be able to visualize raw inputs that are correctly vs not correctly predicted</li> <li> Solve predicted class imbalance (currently 1 to 9 ish)</li><li>LDA (SVM)</li></ul>
+</ul>
+<ul>
+<b>Data preprocessing</b> <br><br>
+<ul> <li>Prior Literature: Zhang ‘19 (Classification of Hand Movements from EEG using a Deep Attention-based LSTM Network) exclude bad subjects: 43, 88, 89, 92, 100, and 104 discard central 10 sensors following ref 23 notch filter for wall 50/60hz noise band pass filter 0.5 to 70 hz.</li></ul>
+</ul>
+<ul>
+<b>Data preprocessing</b> <br><br>
+<ul> <li>Prior Literature: Zhang ‘19 (Classification of Hand Movements from EEG using a Deep Attention-based LSTM Network) exclude bad subjects: 43, 88, 89, 92, 100, and 104 discard central 10 sensors following ref 23 notch filter for wall 50/60hz noise band pass filter 0.5 to 70 hz.</li></ul>
+</ul>
+<ul>
+<b>Pandas dataframes for hyper param logging</b> <br><br>
+<ul><li>Read from standardized package parameter output library: </li> <br><ul><li>keras: </li><ul><li>model.get_config()</li><li> model.summary()</li></ul></ul>
+<ul><li>pytorch: </li><ul><li><a href="https://github.com/tevisgehr/EEG-Classification">How to Print Model Parameters Part 1</a></li><li> <a href="https://github.com/tevisgehr/EEG-Classification">How to Print Model Parameters Part 2</a></li></ul></ul> <br>
+<li>Format the result data with experimented parameters</li>
+<li><a href="https://machinelearningmastery.com/dropout-for-regularizing-deep-neural-networks/">Hyper parameter selection</a></li><br>
+    <ul><li>Dropout rate: 0.5 to 0.8 units retained</li><li>Less dropout in the input layer</li><li>Not used on the output layer</li><li> Check the sign of the param</li><li> Rule of thumb: <br> Divide the number of nodes in the layer before dropout by the proposed dropout rate and use that as the number of nodes in the new network that uses dropout. For example, a network with 100 nodes and a proposed dropout rate of 0.5 will require 200 nodes (100 / 0.5) when using dropout)
+May not be necessary if using batch normalization</li><li>Gridsearch: <br>0.4 to 0.9 increments of 0.1</li><li> Plot weight size on train/test accuracy curves (If high values exist try setting a max norm weight constraint betw 3-4)</li> </ul> <br>
+<li>Improve test error and prevent overfitting</li>
+<li>Training error solution validations</li>
+</ul></ul>
+    
+<h4>Week 10-11:</h4>
+<ul>Summarize all experiemnt results and prepare a short paper for purpose of exlanation.</ul>
+    
+<p><em>Maintained by Shan Zhong <br> Last udate date: March 13th </em>
+
+</p></body></html>
